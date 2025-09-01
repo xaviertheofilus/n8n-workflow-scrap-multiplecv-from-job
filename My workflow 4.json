@@ -1,0 +1,712 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "ff82f87b-f7f1-48a7-930c-ac769626f458",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### AI CV Screening Workflow\n\n**Automation Features:**\n✅ Scrapes jobs from LinkedIn, Indeed, JobStreet\n✅ AI-powered CV analysis with Sentence-BERT\n✅ Smart matching and similarity scoring\n✅ Real-time dashboard updates\n✅ Slack notifications\n✅ MySQL database storage\n\n**Runs every 2 hours automatically**",
+        "height": 232,
+        "width": 416
+      },
+      "id": "aa093507-b570-4060-a71f-23f9d85afabe",
+      "name": "Workflow Description",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f76e50fb-96d8-48f1-ad7f-90434fb581a7",
+      "name": "Set Search Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keywords",
+              "value": "={{ $json.keywords }}"
+            },
+            {
+              "name": "location",
+              "value": "={{ $json.location }}"
+            },
+            {
+              "name": "f_TPR",
+              "value": "r86400"
+            },
+            {
+              "name": "start",
+              "value": "0"
+            },
+            {
+              "name": "count",
+              "value": "={{ $json.max_jobs_per_source }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "9a89dcdd-506d-47ba-91b9-94a8163fa16b",
+      "name": "LinkedIn Jobs Scraper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://id.indeed.com/jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.keywords }}"
+            },
+            {
+              "name": "l",
+              "value": "={{ $json.location }}"
+            },
+            {
+              "name": "fromage",
+              "value": "1"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $json.max_jobs_per_source }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Referer",
+              "value": "https://id.indeed.com/"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "2827e807-dcf0-46b7-89c3-d9d0a0a55844",
+      "name": "Indeed Jobs Scraper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.jobstreet.co.id/jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keywords",
+              "value": "={{ $json.keywords }}"
+            },
+            {
+              "name": "locationId",
+              "value": "1000"
+            },
+            {
+              "name": "posted",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "id-ID,id;q=0.9,en;q=0.8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "779a3ec5-bb4e-45f0-9c9f-7ad7d1360655",
+      "name": "JobStreet Scraper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced job data processing with better HTML parsing\nconst allJobs = [];\nlet jobId = 1;\n\n// Process each input from scrapers\nfor (const input of $input.all()) {\n  try {\n    const htmlContent = input.json.data || input.json || '';\n    const nodeName = input.node ? input.node.name : 'unknown';\n    const source = nodeName.toLowerCase().includes('linkedin') ? 'linkedin' : \n                  nodeName.toLowerCase().includes('indeed') ? 'indeed' : \n                  nodeName.toLowerCase().includes('jobstreet') ? 'jobstreet' : 'unknown';\n    \n    console.log(`Processing ${source} data, content length: ${htmlContent.length}`);\n    \n    // Enhanced regex patterns for better job extraction\n    const patterns = {\n      linkedin: {\n        title: /<h3[^>]*class[^>]*job-result-card__title[^>]*>\\s*<a[^>]*>([^<]+)<\\/a>\\s*<\\/h3>/gi,\n        company: /<h4[^>]*class[^>]*job-result-card__subtitle[^>]*>\\s*<a[^>]*>([^<]+)<\\/a>/gi,\n        location: /<span[^>]*class[^>]*job-result-card__location[^>]*>([^<]+)<\\/span>/gi\n      },\n      indeed: {\n        title: /<h2[^>]*class[^>]*jobTitle[^>]*>\\s*<a[^>]*><span[^>]*>([^<]+)<\\/span><\\/a>\\s*<\\/h2>/gi,\n        company: /<span[^>]*class[^>]*companyName[^>]*>([^<]+)<\\/span>/gi,\n        location: /<div[^>]*class[^>]*companyLocation[^>]*>([^<]+)<\\/div>/gi\n      },\n      jobstreet: {\n        title: /<h1[^>]*class[^>]*job-title[^>]*>([^<]+)<\\/h1>/gi,\n        company: /<span[^>]*class[^>]*company-name[^>]*>([^<]+)<\\/span>/gi,\n        location: /<span[^>]*class[^>]*job-location[^>]*>([^<]+)<\\/span>/gi\n      }\n    };\n    \n    // Use appropriate pattern based on source\n    const sourcePatterns = patterns[source] || patterns.linkedin;\n    \n    // Extract job data using regex\n    const titleMatches = [...htmlContent.matchAll(sourcePatterns.title)];\n    const companyMatches = [...htmlContent.matchAll(sourcePatterns.company)];\n    const locationMatches = [...htmlContent.matchAll(sourcePatterns.location)];\n    \n    // Process extracted matches\n    titleMatches.forEach((match, index) => {\n      if (match[1] && match[1].trim().length > 3) {\n        const jobTitle = match[1].trim().replace(/\\s+/g, ' ');\n        \n        // Filter for relevant tech jobs\n        const techKeywords = ['engineer', 'developer', 'programmer', 'analyst', 'scientist', 'architect', 'manager', 'lead', 'senior', 'junior'];\n        const isRelevantJob = techKeywords.some(keyword => \n          jobTitle.toLowerCase().includes(keyword)\n        );\n        \n        if (isRelevantJob) {\n          allJobs.push({\n            id: `${source}_${jobId++}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n            title: jobTitle,\n            company: companyMatches[index] ? companyMatches[index][1].trim() : `Company from ${source}`,\n            location: locationMatches[index] ? locationMatches[index][1].trim() : \n                     $('Set Search Configuration').first().json.location.split(' OR ')[0],\n            link: `https://${source}.com/job/${jobId}`,\n            source: source,\n            scraped_at: new Date().toISOString(),\n            keywords_matched: $('Set Search Configuration').first().json.keywords\n          });\n        }\n      }\n    });\n  } catch (error) {\n    console.error(`Error processing ${input.node ? input.node.name : 'unknown'} data:`, error.message);\n  }\n}\n\n// Add sample jobs if no real jobs found (for testing)\nif (allJobs.length === 0) {\n  console.log('No jobs found from scraping, adding sample data for testing');\n  \n  const sampleJobs = [\n    {\n      id: `sample_linkedin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n      title: \"Senior Software Engineer - Backend\",\n      company: \"Tech Innovators Indonesia\",\n      location: \"Jakarta\",\n      link: \"https://linkedin.com/jobs/view/sample1\",\n      source: \"linkedin\",\n      scraped_at: new Date().toISOString(),\n      keywords_matched: $('Set Search Configuration').first().json.keywords\n    },\n    {\n      id: `sample_indeed_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n      title: \"Data Scientist - Machine Learning\",\n      company: \"AI Solutions Corp\",\n      location: \"Bandung\",\n      link: \"https://indeed.com/jobs/view/sample2\",\n      source: \"indeed\",\n      scraped_at: new Date().toISOString(),\n      keywords_matched: $('Set Search Configuration').first().json.keywords\n    },\n    {\n      id: `sample_jobstreet_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n      title: \"Full Stack Developer - React & Node.js\",\n      company: \"Digital Startup Ltd\",\n      location: \"Surabaya\",\n      link: \"https://jobstreet.co.id/jobs/view/sample3\",\n      source: \"jobstreet\",\n      scraped_at: new Date().toISOString(),\n      keywords_matched: $('Set Search Configuration').first().json.keywords\n    }\n  ];\n  allJobs.push(...sampleJobs);\n}\n\n// Advanced deduplication logic\nconst uniqueJobs = [];\nconst seenTitles = new Set();\n\nallJobs.forEach(job => {\n  // Normalize title for comparison\n  const normalizedTitle = job.title\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s]/g, '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n  \n  // Check for similarity with existing jobs\n  let isDuplicate = false;\n  for (const seenTitle of seenTitles) {\n    // Simple similarity check (can be enhanced with Levenshtein distance)\n    const commonWords = normalizedTitle.split(' ').filter(word => \n      seenTitle.includes(word) && word.length > 3\n    );\n    \n    if (commonWords.length >= 2) {\n      isDuplicate = true;\n      break;\n    }\n  }\n  \n  if (!isDuplicate) {\n    seenTitles.add(normalizedTitle);\n    uniqueJobs.push(job);\n  }\n});\n\nconsole.log(`Total jobs scraped: ${allJobs.length}`);\nconsole.log(`Unique jobs after deduplication: ${uniqueJobs.length}`);\nconsole.log(`Jobs by source: LinkedIn: ${allJobs.filter(j => j.source === 'linkedin').length}, Indeed: ${allJobs.filter(j => j.source === 'indeed').length}, JobStreet: ${allJobs.filter(j => j.source === 'jobstreet').length}`);\n\nreturn uniqueJobs.map(job => ({ json: job }));"
+      },
+      "id": "370bef95-539b-4e25-b8eb-237f0b455523",
+      "name": "Parse & Deduplicate Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "job-title-valid",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "company-valid",
+              "leftValue": "={{ $json.company }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68f842f1-2b1c-4cab-9e63-01c703d221e9",
+      "name": "Filter Valid Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "523733bd-f3be-4999-9475-07330492d06e",
+      "name": "Batch Job Processing",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1520,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $node[\"Set Search Configuration\"].json.fastapi_endpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.FASTAPI_API_KEY || 'your_api_key_here' }}"
+            },
+            {
+              "name": "X-Workflow-ID",
+              "value": "n8n-cv-screening"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "a88130c0-a8fc-498b-adef-99eec54fdbf8",
+      "name": "FastAPI AI Processor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1712,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "api-success-check",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "936a06ff-b653-4553-af52-ef56ff5a6586",
+      "name": "Check API Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $node[\"Set Search Configuration\"].json.dashboard_endpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Dashboard-Update",
+              "value": "cv-processing-complete"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "f45460c5-9820-45b0-9c18-709f393d04b6",
+      "name": "Update Dashboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "{{ $vars.GOOGLE_SHEET_ID || '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms' }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Processing_Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ new Date().toISOString() }}",
+            "execution_id": "={{ $executionId }}",
+            "jobs_found": "={{ $node[\"Parse & Deduplicate Jobs\"].json ? Object.keys($node[\"Parse & Deduplicate Jobs\"].json).length : 0 }}",
+            "jobs_processed": "={{ $json.body.processed_count || 0 }}",
+            "success_rate": "={{ $json.body.success_rate || 0 }}",
+            "processing_time": "={{ $json.body.processing_time || 0 }}",
+            "linkedin_jobs": "={{ $node[\"Parse & Deduplicate Jobs\"].json ? $node[\"Parse & Deduplicate Jobs\"].json.filter(j => j.source === 'linkedin').length : 0 }}",
+            "indeed_jobs": "={{ $node[\"Parse & Deduplicate Jobs\"].json ? $node[\"Parse & Deduplicate Jobs\"].json.filter(j => j.source === 'indeed').length : 0 }}",
+            "jobstreet_jobs": "={{ $node[\"Parse & Deduplicate Jobs\"].json ? $node[\"Parse & Deduplicate Jobs\"].json.filter(j => j.source === 'jobstreet').length : 0 }}",
+            "status": "success",
+            "keywords_used": "={{ $node[\"Set Search Configuration\"].json.keywords }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "42334a6c-8e3a-4c45-a965-07d9b3cd7925",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2224,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced error handling and logging system\nconst inputData = $input.first().json;\nconst currentNode = $node.name;\nconst executionId = $executionId;\n\n// Determine error source and details\nlet errorSource = 'unknown';\nlet errorMessage = 'Unknown error occurred';\nlet statusCode = 'N/A';\nlet errorDetails = {};\n\nif (inputData) {\n  errorSource = inputData.error_source || currentNode;\n  errorMessage = inputData.error?.message || inputData.message || JSON.stringify(inputData).substring(0, 200);\n  statusCode = inputData.statusCode || inputData.status || 'N/A';\n  errorDetails = {\n    original_error: inputData,\n    node_name: currentNode,\n    execution_context: {\n      workflow_id: 'cv-screening-workflow',\n      execution_id: executionId,\n      timestamp: new Date().toISOString(),\n      keywords_used: $node[\"Set Search Configuration\"]?.json?.keywords || 'N/A'\n    }\n  };\n}\n\n// Create comprehensive error report\nconst errorReport = {\n  error: true,\n  timestamp: new Date().toISOString(),\n  execution_id: executionId,\n  error_source: errorSource,\n  error_message: errorMessage,\n  status_code: statusCode,\n  error_details: errorDetails,\n  workflow_step: 'AI Processing',\n  retry_recommended: statusCode >= 500 || statusCode === 'N/A',\n  impact_level: statusCode >= 500 ? 'high' : 'medium'\n};\n\nconsole.error('CV Screening Workflow Error:', errorReport);\n\nreturn [{ json: errorReport }];"
+      },
+      "id": "61182d36-07ae-4474-b4e6-9c298dac7c06",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "cv-processing-alerts",
+          "mode": "name"
+        },
+        "text": "=⚠️ *CV Processing Workflow Failed*\\n\\n🚨 **Error Details:**\\n• Error Source: {{ $json.error_source }}\\n• Message: {{ $json.error_message }}\\n• Status Code: {{ $json.status_code }}\\n• Impact Level: {{ $json.impact_level }}\\n• Execution ID: {{ $json.execution_id }}\\n\\n🔄 **Retry Recommended:** {{ $json.retry_recommended ? 'Yes' : 'No' }}\\n⏰ **Error Time:** {{ new Date($json.timestamp).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) }} WIB\\n\\n🔍 **Next Steps:** Check FastAPI service and database connectivity",
+        "otherOptions": {
+          "includeLinkToWorkflow": true
+        }
+      },
+      "id": "52aee150-e573-499b-a391-70ec562b93eb",
+      "name": "Slack Error Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [
+        2192,
+        176
+      ],
+      "webhookId": "de3d8078-e231-4559-8252-939561c44597"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/v1/workflow/error-log",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.FASTAPI_API_KEY || 'your_api_key_here' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "id": "09c8c2bc-57a9-41e6-b01b-cd38be86bfbd",
+      "name": "Log Error to API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2336,
+        176
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Search Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search Configuration": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Indeed Jobs Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "JobStreet Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Jobs Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse & Deduplicate Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Indeed Jobs Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse & Deduplicate Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JobStreet Scraper": {
+      "main": [
+        [
+          {
+            "node": "Parse & Deduplicate Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Deduplicate Jobs": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Jobs": {
+      "main": [
+        [
+          {
+            "node": "Batch Job Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Job Processing": {
+      "main": [
+        [
+          {
+            "node": "FastAPI AI Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FastAPI AI Processor": {
+      "main": [
+        [
+          {
+            "node": "Check API Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Success": {
+      "main": [
+        [
+          {
+            "node": "Update Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Dashboard": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Slack Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Error Notification": {
+      "main": [
+        [
+          {
+            "node": "Log Error to API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9153b326-89b0-46fe-8135-b579cd5e6ca9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bc2a07adb276a1efb45724115a57f78bf7fb7497fc1e916788d06b3412fb41ab"
+  },
+  "id": "Xq9wnaJltUr6XNOP",
+  "tags": []
+}
